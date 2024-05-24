@@ -3,6 +3,8 @@ import { prisma } from "../src/utils/prisma.util.js";
 
 const router = express.Router();
 
+// 생성 API
+
 router.post("/sign-up", async (req, res, next) => {
   const { email, password, name, age, gender, status, address } = req.body;
 
