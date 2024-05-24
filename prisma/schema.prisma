@@ -12,3 +12,46 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Users {
+  userId Int @id @default(autoincreament()) @map("userId")
+  email  String  @unique @map("email")
+  password Int @map("password")
+
+  createAt DateTime @default(now()) @map("createAt")
+  updateAt DateTime @updatedAt @map("updateAt)
+
+  UserInfos UserInfos?
+  Contents
+
+  @@map("Users")
+}
+
+model UserInfos {
+  userInfoId Int @id @default(autoincreament()) @map("userInfoId")
+  UserId Int @unique @map("UserId")
+  name String @map("name")
+  age Int @map("age")
+  gender String @map("gender")
+  adress String @map("adress")
+
+  createAt DateTime @default(now()) @map("createAt")
+  updateAt DateTime @updatedAt @map("updateAt)
+
+  User Users @relation(fields:[UserId], references: [userId], onDelete:(Cascade))
+
+  @@map("UserInfos")
+}
+
+model Contents {
+  contentsId Int @id @default(autoincreament()) @map("contentsId")
+  email String @map("email")
+  title String @map("title")
+  myinfo String @db.Text @map("myinfo")
+  status String @map("status")
+
+  createAt DateTime @default(now()) @map("createAt")
+  updateAt DateTime @updatedAt @map("updateAt)
+
+  @@map("contents")
+}
