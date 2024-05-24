@@ -57,5 +57,5 @@ model Contents {
   User Users @relation(fields: [UserId], references: [userId], onDelete: Cascade)
 
 
-  @@map("contents")
+  @@map("Contents")
 }
