@@ -2,6 +2,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "../src/utils/prisma.util.js";
+import authMiddleware from "../src/middlewares/auth.middleware.js";
 
 const router = express.Router();
 
@@ -71,6 +72,36 @@ router.post("/sign-in", async (req, res, next) => {
   );
   res.cookie("authorization", `Bearer ${token}`);
   return res.status(200).json({ message: "로그인 성공했습니다." });
+});
+
+//사용자 조회 API
+
+router.get("/users", authMiddleware, async (req, res, next) => {
+  //1. 클라이언트가 ** 로그인된 사용자인 검증**합니다.
+  const { userId } = req.user;
+
+  //2. 사용자를 조회할 때, 1:1 관계를 맺고 있는 **Users**와 **UserInfos** 테이블을 조회합니다.
+  const user = await prisma.users.findFirst({
+    where: { userId: +userId },
+    //특정 컬럼만 조회하는 파라미터
+    select: {
+      userId: true,
+      email: true,
+      createdAt: true,
+      updatedAt: true,
+      // UserInfos 함께 조회되는 JOIN 문법을 사용한다 .
+      UserInfos: {
+        select: {
+          name: true,
+          age: true,
+          gender: true,
+          address: true,
+        },
+      },
+    },
+  });
+  //3.조회한 사용자의 상세한 정보를 클라이언트에게 반환합니다.
+  return res.status(200).json({ data: user });
 });
 
 export default router;
