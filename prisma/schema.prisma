@@ -46,7 +46,6 @@ model UserInfos {
 model Contents {
   contentsId Int @id @default(autoincrement()) @map("contentsId")
   UserId Int @map("UserId")
-  email String @map("email")
   title String @map("title")
   myinfo String @db.Text @map("myinfo")
   status String @map("status")

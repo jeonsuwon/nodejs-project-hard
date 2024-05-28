@@ -108,4 +108,26 @@ router.get("/users", authMiddleware, async (req, res, next) => {
   return res.status(200).json({ data: user });
 });
 
+//사용자 업데이트 api
+router.put("/users", authMiddleware, async (req, res, next) => {
+  const { userId } = req.user;
+
+  const { name, age, gender, address } = req.body;
+
+  const user = await prisma.userInfos.findFirst({
+    where: { UserId: parseInt(userId) },
+  });
+  if (!user) {
+    return res.status(404).json({ errorMessage: "게시글이 존재하지않습니다." });
+  }
+
+  await prisma.userInfos.update({
+    data: { name, age, gender, address },
+    where: {
+      UserId: parseInt(userId),
+    },
+  });
+  return res.status(200).json({ message: "수정이 완료되었습니다." });
+});
+
 export default router;
