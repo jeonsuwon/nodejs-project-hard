@@ -6,11 +6,82 @@ import authMiddleware from "../src/middlewares/auth.middleware.js";
 
 const router = express.Router();
 
+//email 정규식화
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // 생성 API
 
 router.post("/sign-up", async (req, res, next) => {
   try {
-    const { email, password, name, age, gender, status, address } = req.body;
+    const {
+      email,
+      password,
+      checkpassword,
+      name,
+      age,
+      gender,
+      status = "APPLICANT",
+      address,
+    } = req.body;
+
+    //필수 검증
+    if (!email)
+      return res.status(400).json({ errorMessage: "email 작성이 필요합니다." });
+    if (!password)
+      return res
+        .status(400)
+        .json({ errorMessage: "password 작성이 필요합니다." });
+    if (!checkpassword)
+      return res
+        .status(400)
+        .json({ errorMessage: "checkpassword 작성이 필요합니다." });
+    if (!name)
+      return res.status(400).json({ errorMessage: "name 작성이 필요합니다." });
+    if (!age)
+      return res.status(400).json({ errorMessage: "age 작성이 필요합니다." });
+    if (!gender)
+      return res
+        .status(400)
+        .json({ errorMessage: "gender 작성이 필요합니다." });
+    if (!status)
+      return res
+        .status(400)
+        .json({ errorMessage: "status 작성이 필요합니다." });
+    if (!address)
+      return res
+        .status(400)
+        .json({ errorMessage: "address 작성이 필요합니다." });
+
+    if (!emailRegex.test(email)) {
+      return res
+        .status(400)
+        .json({ errorMessage: "유효하지 않은 이메일 형식입니다." });
+    }
+
+    if (password.length < 6) {
+      return res
+        .status(400)
+        .json({ errorMessage: "비밀번호는 최소 6자 이상이어야 합니다." });
+    }
+
+    const validStatuses = ["APPLICANT", "RECRUITER"];
+    if (!validStatuses.includes(status.toUpperCase())) {
+      return res
+        .status(400)
+        .json({ errorMessage: "APPLICANT or RECRUITER으로 작성해주세요" });
+    }
+
+    const validGenders = ["MALE", "FEMALE"];
+    if (!validGenders.includes(gender.toUpperCase())) {
+      return res
+        .status(400)
+        .json({ errorMessage: "MALE or FEMALE로 작성해주세요." });
+    }
+
+    if (password !== checkpassword)
+      return res
+        .status(400)
+        .json({ errorMessage: "checkpassword 확인이 필요합니다." });
 
     const isExistUser = await prisma.users.findFirst({
       where: { email },
@@ -37,11 +108,13 @@ router.post("/sign-up", async (req, res, next) => {
         name,
         age,
         gender: gender.toUpperCase(), //전달받은 gender body를 대문자로 치환한다.
-        status,
+        status: status.toUpperCase(),
         address,
       },
     });
-    return res.status(201).json({ message: "회원가입이 완료가 되었습니다." });
+    return res
+      .status(201)
+      .json({ message: "회원가입이 완료가 되었습니다.", data: userinfo });
   } catch (err) {
     next(err);
   }
@@ -80,7 +153,7 @@ router.post("/sign-in", async (req, res, next) => {
 
 //사용자 조회 API
 
-router.get("/users", authMiddleware, async (req, res, next) => {
+router.get("/user-details", authMiddleware, async (req, res, next) => {
   //1. 클라이언트가 ** 로그인된 사용자인 검증**합니다.
   const { userId } = req.user;
 
@@ -91,6 +164,7 @@ router.get("/users", authMiddleware, async (req, res, next) => {
     select: {
       userId: true,
       email: true,
+      password: false,
       createdAt: true,
       updatedAt: true,
       // UserInfos 함께 조회되는 JOIN 문법을 사용한다 .
@@ -109,10 +183,15 @@ router.get("/users", authMiddleware, async (req, res, next) => {
 });
 
 //사용자 업데이트 api
-router.put("/users", authMiddleware, async (req, res, next) => {
-  const { userId } = req.user;
+router.put("/user-info-update", authMiddleware, async (req, res, next) => {
+  const { userId, username, userage, usergender, useraddress } = req.user;
 
-  const { name, age, gender, address } = req.body;
+  const {
+    name = username,
+    age = userage,
+    gender = usergender,
+    address = useraddress,
+  } = req.body;
 
   const user = await prisma.userInfos.findFirst({
     where: { UserId: parseInt(userId) },
