@@ -120,14 +120,16 @@ router.put(
         .json({ errorMessage: "게시글이 존재하지않습니다." });
     }
 
-    await prisma.contents.update({
+    const chgcontent = await prisma.contents.update({
       data: { title, myinfo, status },
       where: {
         UserId: parseInt(userId),
         contentsId: parseInt(resumeId),
       },
     });
-    return res.status(200).json({ message: "수정이 완료되었습니다." });
+    return res
+      .status(200)
+      .json({ message: "수정이 완료되었습니다.", data: chgcontent });
   }
 );
 

@@ -200,17 +200,19 @@ router.put("/user-info-update", authMiddleware, async (req, res, next) => {
     return res.status(404).json({ errorMessage: "게시글이 존재하지않습니다." });
   }
 
-  await prisma.userInfos.update({
+  const userInfo = await prisma.userInfos.update({
     data: { name, age, gender, address },
     where: {
       UserId: parseInt(userId),
     },
   });
-  return res.status(200).json({ message: "수정이 완료되었습니다." });
+  return res
+    .status(200)
+    .json({ message: "수정이 완료되었습니다.", data: userInfo });
 });
 
 //사용자 delete api
-router.delete("/users", authMiddleware, async (req, res, next) => {
+router.delete("/user-info-delete", authMiddleware, async (req, res, next) => {
   const { userId } = req.user;
 
   const user = await prisma.users.findFirst({
