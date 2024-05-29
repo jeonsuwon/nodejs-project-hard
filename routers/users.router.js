@@ -3,11 +3,14 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "../src/utils/prisma.util.js";
 import authMiddleware from "../src/middlewares/auth.middleware.js";
+import dotenv from "dotenv";
 
 const router = express.Router();
+dotenv.config();
 
 //email 정규식화
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const secretkey = process.env.SECRET_KEY;
 
 // 생성 API
 
@@ -130,13 +133,13 @@ router.post("/sign-in", async (req, res, next) => {
   });
   if (!user) {
     return res
-      .status(401)
+      .status(400)
       .json({ errorMessage: "등록되어있지 않는 이메일입니다." });
   }
 
   if (!(await bcrypt.compare(password, user.password))) {
     return res
-      .status(401)
+      .status(400)
       .json({ errorMessage: "비밀번호가 일치하지 않습니다." });
   }
 
@@ -145,7 +148,7 @@ router.post("/sign-in", async (req, res, next) => {
     {
       userId: user.userId,
     },
-    "customized_secret_key" // 비밀 키 , dotenv를 이용해서, 외부에서 코드를 보더라도, 알 수 없도록 구현해야함
+    secretkey // 비밀 키 , dotenv를 이용해서, 외부에서 코드를 보더라도, 알 수 없도록 구현해야함
   );
   res.cookie("authorization", `Bearer ${token}`);
   return res.status(200).json({ message: "로그인 성공했습니다." });
