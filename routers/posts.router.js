@@ -1,67 +1,76 @@
 import express from "express";
 import authMiddleware from "../src/middlewares/auth.middleware.js";
 import { prisma } from "../src/utils/prisma.util.js";
+import { PostsController } from "../controller/posts.controller.js";
 
 const router = express.Router();
 
+const postsController = new PostsController();
+
 //게시글 생성 api
-router.post("/resume-create", authMiddleware, async (req, res, next) => {
-  const { userId } = req.user;
-  const { title, myinfo, status = "APPLY" } = req.body;
+router.post("/posts", authMiddleware, postsController.createPost);
 
-  if (!title)
-    return res.status(400).json({ errorMessage: "title 작성이 필요합니다." });
-  if (!myinfo)
-    return res.status(400).json({ errorMessage: "myinfo 작성이 필요합니다." });
+//게시글 조회 api
+router.get("/posts", postsController.getPosts);
 
-  const validStatuses = [
-    "APPLY",
-    "DROP",
-    "PASS",
-    "INTERVIEW1",
-    "INTERVIEW2",
-    "FINAL_PASS",
-  ];
-  if (!validStatuses.includes(status.toUpperCase())) {
-    return res.status(400).json({
-      errorMessage:
-        "DROP, PASS, INTERVIEW1, INTERVIEW2, FINAL_PASS 으로 작성해주세요",
-    });
-  }
+// // 게시글 생성 api
+// router.post("/resume-create", authMiddleware, async (req, res, next) => {
+//   const { userId } = req.user;
+//   const { title, myinfo, status = "APPLY" } = req.body;
 
-  const content = await prisma.contents.create({
-    data: {
-      UserId: userId,
-      title,
-      myinfo,
-      status,
-    },
-  });
-  return res.status(201).json({ data: content });
-});
+//   if (!title)
+//     return res.status(400).json({ errorMessage: "title 작성이 필요합니다." });
+//   if (!myinfo)
+//     return res.status(400).json({ errorMessage: "myinfo 작성이 필요합니다." });
 
-//게시글 목록조회 api
-router.get("/resume-info", async (req, res, next) => {
-  const content = await prisma.contents.findMany({
-    select: {
-      contentsId: true,
-      UserId: true,
-      title: true,
-      status: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-  if (!content) {
-    return res
-      .status(400)
-      .json({ errorMessage: "작성하신 게시글이 없습니다. 확인해주세요." });
-  }
-  return res.status(200).json({ data: content });
-});
+//   const validStatuses = [
+//     "APPLY",
+//     "DROP",
+//     "PASS",
+//     "INTERVIEW1",
+//     "INTERVIEW2",
+//     "FINAL_PASS",
+//   ];
+//   if (!validStatuses.includes(status.toUpperCase())) {
+//     return res.status(400).json({
+//       errorMessage:
+//         "DROP, PASS, INTERVIEW1, INTERVIEW2, FINAL_PASS 으로 작성해주세요",
+//     });
+//   }
+
+//   const content = await prisma.contents.create({
+//     data: {
+//       UserId: userId,
+//       title,
+//       myinfo,
+//       status,
+//     },
+//   });
+//   return res.status(201).json({ data: content });
+// });
+
+// //게시글 목록조회 api
+// router.get("/resume-info", async (req, res, next) => {
+//   const content = await prisma.contents.findMany({
+//     select: {
+//       contentsId: true,
+//       UserId: true,
+//       title: true,
+//       status: true,
+//       createdAt: true,
+//       updatedAt: true,
+//     },
+//     orderBy: {
+//       createdAt: "desc",
+//     },
+//   });
+//   if (!content) {
+//     return res
+//       .status(400)
+//       .json({ errorMessage: "작성하신 게시글이 없습니다. 확인해주세요." });
+//   }
+//   return res.status(200).json({ data: content });
+// });
 
 //게시물 상세조회 api
 router.get(
