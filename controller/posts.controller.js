@@ -17,8 +17,8 @@ export class PostsController {
   getDetailPost = async (req, res, next) => {
     try {
       const { userId } = req.user;
-      const contentId = req.params.contentId;
-      const posts = await this.postsService.findDetailPost(userId, contentId);
+      const { contentsId } = req.params;
+      const posts = await this.postsService.findDetailPost(userId, contentsId);
 
       return res.status(200).json({ data: posts });
     } catch (err) {
@@ -39,6 +39,24 @@ export class PostsController {
         status
       );
       return res.status(201).json({ data: createPost });
+    } catch (err) {
+      next(err);
+    }
+  };
+  //게시물 변경
+  updatePost = async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+      const { contentsId } = req.params;
+      const { title, myinfo } = req.body;
+
+      const updatePost = await this.postsService.updatePost(
+        userId,
+        contentsId,
+        title,
+        myinfo
+      );
+      return res.status(201).json({ data: updatePost });
     } catch (err) {
       next(err);
     }

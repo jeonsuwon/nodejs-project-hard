@@ -2,6 +2,7 @@ import { PostsRepository } from "../repositories/posts.repository.js";
 
 export class PostsService {
   postsRepository = new PostsRepository();
+  //게시물 전체조회
   findAllPosts = async () => {
     const posts = await this.postsRepository.findAllPosts();
     posts.sort((a, b) => {
@@ -19,7 +20,7 @@ export class PostsService {
       };
     });
   };
-
+  //게시물 상세조회
   findDetailPost = async (userId, contentsId) => {
     const posts = await this.postsRepository.findDetailPost(userId, contentsId);
     const post = {
@@ -33,7 +34,7 @@ export class PostsService {
     };
     return post;
   };
-
+  //게시물 생성
   createPost = async (userId, title, myinfo, status) => {
     const createPost = await this.postsRepository.createPost(
       userId,
@@ -42,7 +43,25 @@ export class PostsService {
       status
     );
     return {
-      userId: createPost.userId,
+      userId: createPost.UserId,
+      title: createPost.title,
+      myinfo: createPost.myinfo,
+      status: createPost.status,
+      createdAt: createPost.createdAt,
+      updatedAt: createPost.updatedAt,
+    };
+  };
+  //게시물변경
+  updatePost = async (userId, contentsId, title, myinfo) => {
+    const createPost = await this.postsRepository.updatePost(
+      userId,
+      contentsId,
+      title,
+      myinfo
+    );
+    return {
+      userId: createPost.UserId,
+      contentsId: createPost.contentsId,
       title: createPost.title,
       myinfo: createPost.myinfo,
       status: createPost.status,
