@@ -69,4 +69,9 @@ export class PostsService {
       updatedAt: createPost.updatedAt,
     };
   };
+
+  deletePost = async (userId, contentsId) => {
+    const post = await this.postsRepository.deletePost(userId, contentsId);
+    return post;
+  };
 }

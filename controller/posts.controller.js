@@ -61,4 +61,25 @@ export class PostsController {
       next(err);
     }
   };
+
+  //게시글 삭제
+  deletePost = async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+      const { contentsId } = req.params;
+      const posts = await this.postsService.deletePost(userId, contentsId);
+
+      if (!posts) {
+        return res
+          .status(404)
+          .json({ errorMessage: "게시글이 존재하지않습니다." });
+      }
+
+      return res.status(200).json({
+        message: `id:${userId}에 ${contentsId}번게시글이 삭제가 완료되었습니다.`,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
 }

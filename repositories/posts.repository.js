@@ -91,4 +91,18 @@ export class PostsRepository {
     });
     return updatedPost;
   };
+
+  deletePost = async (userId, contentsId) => {
+    const existcontents = await prisma.contents.findUnique({
+      where: { UserId: +userId, contentsId: +contentsId },
+    });
+    console.log(existcontents);
+    if (!existcontents) return existcontents;
+
+    await prisma.contents.delete({
+      where: { UserId: +userId, contentsId: +contentsId },
+    });
+
+    return true;
+  };
 }
