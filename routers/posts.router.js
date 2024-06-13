@@ -22,35 +22,4 @@ router.put("/posts/:contentsId", authMiddleware, postsController.updatePost);
 //게시글 삭제 api
 router.delete("/posts/:contentsId", authMiddleware, postsController.deletePost);
 
-//사용자 delete api
-router.delete(
-  "/resume-delete/:resumeId",
-  authMiddleware,
-  async (req, res, next) => {
-    const { userId } = req.user;
-    const { resumeId } = req.params;
-
-    const content = await prisma.contents.findFirst({
-      where: {
-        UserId: parseInt(userId),
-        contentsId: parseInt(resumeId),
-      },
-    });
-    if (!content) {
-      return res
-        .status(404)
-        .json({ errorMessage: "게시글이 존재하지않습니다." });
-    }
-    await prisma.contents.delete({
-      where: {
-        UserId: parseInt(userId),
-        contentsId: parseInt(resumeId),
-      },
-    });
-    return res.status(200).json({
-      message: `id:${userId}에 ${resumeId}번게시글이 삭제가 완료되었습니다.`,
-    });
-  }
-);
-
 export default router;

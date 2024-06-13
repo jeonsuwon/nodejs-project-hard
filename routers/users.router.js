@@ -14,7 +14,10 @@ const authController = new AuthController();
 const secretkey = process.env.SECRET_KEY;
 
 // 회원가입
-router.post("/sign-up", authController.sighUp);
+router.post("/sign-up", authController.signUp);
+
+//로그인 api구현
+router.post("/sign-in", authController.signIn);
 
 //사용자 로그인 API구현
 

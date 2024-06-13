@@ -1,7 +1,7 @@
 import { prisma } from "../src/utils/prisma.util.js";
 
 export class AuthRepository {
-  sighUp = async (email, hashedPassword, name, age, gender, address) => {
+  signUp = async (email, hashedPassword, name, age, gender, address) => {
     const isExistUser = await prisma.users.findFirst({
       where: { email },
     });
@@ -23,5 +23,12 @@ export class AuthRepository {
       },
     });
     return createdUserInfo;
+  };
+
+  signIn = async (email) => {
+    const user = await prisma.users.findFirst({
+      where: { email },
+    });
+    return user;
   };
 }
