@@ -7,11 +7,14 @@ const router = express.Router();
 
 const postsController = new PostsController();
 
-//게시글 생성 api
-router.post("/posts", authMiddleware, postsController.createPost);
-
 //게시글 조회 api
 router.get("/posts", postsController.getPosts);
+
+//게시글 상세조회api
+router.get("/posts/:contentId", authMiddleware, postsController.getDetailPost);
+
+//게시글 생성 api
+router.post("/posts", authMiddleware, postsController.createPost);
 
 // // 게시글 생성 api
 // router.post("/resume-create", authMiddleware, async (req, res, next) => {
@@ -73,36 +76,36 @@ router.get("/posts", postsController.getPosts);
 // });
 
 //게시물 상세조회 api
-router.get(
-  "/resume-details/:resumeId",
-  authMiddleware,
-  async (req, res, next) => {
-    const { userId } = req.user;
-    const { resumeId } = req.params;
+// router.get(
+//   "/resume-details/:resumeId",
+//   authMiddleware,
+//   async (req, res, next) => {
+//     const { userId } = req.user;
+//     const { resumeId } = req.params;
 
-    const content = await prisma.contents.findFirst({
-      where: {
-        UserId: parseInt(userId),
-        contentsId: +resumeId,
-      },
-      select: {
-        UserId: true,
-        contentsId: true,
-        title: true,
-        myinfo: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-    if (!content) {
-      return res
-        .status(400)
-        .json({ errorMessage: "작성하신 게시글이 없습니다. 확인해주세요." });
-    }
-    return res.status(200).json({ data: content });
-  }
-);
+//     const content = await prisma.contents.findFirst({
+//       where: {
+//         UserId: parseInt(userId),
+//         contentsId: +resumeId,
+//       },
+//       select: {
+//         UserId: true,
+//         contentsId: true,
+//         title: true,
+//         myinfo: true,
+//         status: true,
+//         createdAt: true,
+//         updatedAt: true,
+//       },
+//     });
+//     if (!content) {
+//       return res
+//         .status(400)
+//         .json({ errorMessage: "작성하신 게시글이 없습니다. 확인해주세요." });
+//     }
+//     return res.status(200).json({ data: content });
+//   }
+// );
 
 router.put(
   "/resume-update/:resumeId",
