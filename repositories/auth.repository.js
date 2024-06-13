@@ -31,4 +31,12 @@ export class AuthRepository {
     });
     return user;
   };
+
+  findUser = async (userId) => {
+    console.log("repo-userId:" + userId);
+    const user = await prisma.userInfos.findFirst({
+      where: { UserId: +userId },
+    });
+    return user;
+  };
 }

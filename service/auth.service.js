@@ -28,8 +28,24 @@ export class AuthService {
     const user = await this.authRepository.signIn(email);
 
     return {
+      userId: user.userId,
       email: user.email,
       password: user.password,
+    };
+  };
+
+  findUser = async (userId) => {
+    console.log("ser-userId:" + userId);
+    const user = await this.authRepository.findUser(userId);
+    return {
+      UserId: user.UserId,
+      userInfoId: user.userInfoId,
+      name: user.name,
+      age: user.age,
+      gender: user.gender,
+      address: user.address,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
   };
 }

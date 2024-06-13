@@ -8,6 +8,7 @@ const secretkey = process.env.SECRET_KEY;
 export default async function (req, res, next) {
   try {
     const { authorization } = req.cookies;
+
     if (!authorization) throw new Error("토큰이 존재하지 않습니다.");
 
     const [tokenType, token] = authorization.split(" ");
