@@ -96,7 +96,6 @@ export class PostsRepository {
     const existcontents = await prisma.contents.findUnique({
       where: { UserId: +userId, contentsId: +contentsId },
     });
-    console.log(existcontents);
     if (!existcontents) return existcontents;
 
     await prisma.contents.delete({

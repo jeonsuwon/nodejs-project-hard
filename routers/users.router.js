@@ -4,124 +4,17 @@ import jwt from "jsonwebtoken";
 import { prisma } from "../src/utils/prisma.util.js";
 import authMiddleware from "../src/middlewares/auth.middleware.js";
 import dotenv from "dotenv";
+import { AuthController } from "../controller/auth.controller.js";
 
 const router = express.Router();
 dotenv.config();
 
-//email 정규식화
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const authController = new AuthController();
+
 const secretkey = process.env.SECRET_KEY;
 
-// 생성 API
-
-router.post("/sign-up", async (req, res, next) => {
-  try {
-    const {
-      email,
-      password,
-      checkpassword,
-      name,
-      age,
-      gender,
-      status = "APPLICANT",
-      address,
-    } = req.body;
-
-    //필수 검증
-    if (!email)
-      return res.status(400).json({ errorMessage: "email 작성이 필요합니다." });
-    if (!password)
-      return res
-        .status(400)
-        .json({ errorMessage: "password 작성이 필요합니다." });
-    if (!checkpassword)
-      return res
-        .status(400)
-        .json({ errorMessage: "checkpassword 작성이 필요합니다." });
-    if (!name)
-      return res.status(400).json({ errorMessage: "name 작성이 필요합니다." });
-    if (!age)
-      return res.status(400).json({ errorMessage: "age 작성이 필요합니다." });
-    if (!gender)
-      return res
-        .status(400)
-        .json({ errorMessage: "gender 작성이 필요합니다." });
-    if (!status)
-      return res
-        .status(400)
-        .json({ errorMessage: "status 작성이 필요합니다." });
-    if (!address)
-      return res
-        .status(400)
-        .json({ errorMessage: "address 작성이 필요합니다." });
-
-    if (!emailRegex.test(email)) {
-      return res
-        .status(400)
-        .json({ errorMessage: "유효하지 않은 이메일 형식입니다." });
-    }
-
-    if (password.length < 6) {
-      return res
-        .status(400)
-        .json({ errorMessage: "비밀번호는 최소 6자 이상이어야 합니다." });
-    }
-
-    const validStatuses = ["APPLICANT", "RECRUITER"];
-    if (!validStatuses.includes(status.toUpperCase())) {
-      return res
-        .status(400)
-        .json({ errorMessage: "APPLICANT or RECRUITER으로 작성해주세요" });
-    }
-
-    const validGenders = ["MALE", "FEMALE"];
-    if (!validGenders.includes(gender.toUpperCase())) {
-      return res
-        .status(400)
-        .json({ errorMessage: "MALE or FEMALE로 작성해주세요." });
-    }
-
-    if (password !== checkpassword)
-      return res
-        .status(400)
-        .json({ errorMessage: "checkpassword 확인이 필요합니다." });
-
-    const isExistUser = await prisma.users.findFirst({
-      where: { email },
-    });
-
-    if (isExistUser) {
-      return res
-        .status(409)
-        .json({ errorMessage: "이미 존재하는 이메일입니다." });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await prisma.users.create({
-      data: {
-        email,
-        password: hashedPassword,
-      },
-    });
-
-    const userinfo = await prisma.userInfos.create({
-      data: {
-        UserId: user.userId,
-        name,
-        age,
-        gender: gender.toUpperCase(), //전달받은 gender body를 대문자로 치환한다.
-        status: status.toUpperCase(),
-        address,
-      },
-    });
-    return res
-      .status(201)
-      .json({ message: "회원가입이 완료가 되었습니다.", data: userinfo });
-  } catch (err) {
-    next(err);
-  }
-});
+// 회원가입
+router.post("/sign-up", authController.sighUp);
 
 //사용자 로그인 API구현
 
