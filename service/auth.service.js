@@ -35,18 +35,8 @@ export class AuthService {
   };
 
   findUser = async (userId) => {
-    console.log("ser-userId:" + userId);
     const user = await this.authRepository.findUser(userId);
-    return {
-      UserId: user.UserId,
-      userInfoId: user.userInfoId,
-      name: user.name,
-      age: user.age,
-      gender: user.gender,
-      address: user.address,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
+    return user;
   };
 
   updateUser = async (userId, name, gender, age, address) => {
@@ -57,6 +47,12 @@ export class AuthService {
       age,
       address
     );
+    return user;
+  };
+
+  deleteUser = async (userId) => {
+    const user = await this.authRepository.deleteUser(userId);
+    console.log("seruser:" + user);
     return user;
   };
 }

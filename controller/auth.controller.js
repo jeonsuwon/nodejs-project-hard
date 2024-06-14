@@ -72,6 +72,7 @@ export class AuthController {
   findUser = async (req, res, next) => {
     try {
       const { userId } = req.user;
+      console.log(userId);
       const user = await this.authService.findUser(userId);
 
       return res.status(200).json({
@@ -87,7 +88,7 @@ export class AuthController {
     try {
       const { userId } = req.user;
       const { name, gender, age, address } = req.body;
-      const user = await this.authService.findUser(
+      const user = await this.authService.updateUser(
         userId,
         name,
         gender,
@@ -101,5 +102,17 @@ export class AuthController {
     } catch (err) {
       next(err);
     }
+  };
+
+  //사용자정보삭제
+  deleteUser = async (req, res, next) => {
+    const { userId } = req.user;
+
+    const user = await this.authService.deleteUser(userId);
+
+    return res.status(200).json({
+      message: "정상적으로 변경되었습니다.",
+      data: user,
+    });
   };
 }

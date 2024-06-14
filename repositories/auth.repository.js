@@ -33,24 +33,32 @@ export class AuthRepository {
   };
 
   findUser = async (userId) => {
+    console.log(userId);
     const user = await prisma.userInfos.findFirst({
       where: { UserId: +userId },
     });
+    console.log(user);
     return user;
   };
 
   updateUser = async (userId, name, gender, age, address) => {
-    const user = await prisma.userInfos.findFirst({
-      where: { Userid: +userId },
+    const user = await prisma.userInfos.update({
+      where: { UserId: +userId },
       data: {
-        userId,
-        userInfosId: user.userInfosId,
+        UserId: +userId,
         name,
         address,
         age,
         gender,
         updatedAt: new Date(),
       },
+    });
+    return user;
+  };
+
+  deleteUser = async (userId) => {
+    const user = await prisma.users.delete({
+      where: { userId: +userId },
     });
     return user;
   };
