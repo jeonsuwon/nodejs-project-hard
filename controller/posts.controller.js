@@ -30,13 +30,12 @@ export class PostsController {
   createPost = async (req, res, next) => {
     try {
       const { userId } = req.user;
-      const { title, myinfo, status = "APPLY" } = req.body;
+      const { title, myinfo } = req.body;
 
       const createPost = await this.postsService.createPost(
         userId,
         title,
-        myinfo,
-        status
+        myinfo
       );
       return res.status(201).json({ data: createPost });
     } catch (err) {

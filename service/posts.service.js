@@ -35,12 +35,11 @@ export class PostsService {
     return post;
   };
   //게시물 생성
-  createPost = async (userId, title, myinfo, status) => {
+  createPost = async (userId, title, myinfo) => {
     const createPost = await this.postsRepository.createPost(
       userId,
       title,
-      myinfo,
-      status
+      myinfo
     );
     return {
       userId: createPost.UserId,

@@ -48,4 +48,15 @@ export class AuthService {
       updatedAt: user.updatedAt,
     };
   };
+
+  updateUser = async (userId, name, gender, age, address) => {
+    const user = await this.authRepository.updateUser(
+      userId,
+      name,
+      gender,
+      age,
+      address
+    );
+    return user;
+  };
 }

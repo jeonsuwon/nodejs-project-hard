@@ -20,7 +20,7 @@ export class PostsRepository {
   };
 
   //게시물 생성api
-  createPost = async (userId, title, myinfo, status) => {
+  createPost = async (userId, title, myinfo) => {
     const user = await prisma.users.findFirst({
       where: { userId: +userId },
     });
@@ -31,23 +31,12 @@ export class PostsRepository {
 
     const createdPost = await prisma.contents.create({
       data: {
+        UserId: userId,
         title,
         myinfo,
-        status,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        User: {
-          connectOrCreate: {
-            where: { userId: user.userId },
-            create: {
-              email: user.email,
-              checkpassword: user.checkpassword,
-              password: user.password,
-              createdAt: user.createdAt,
-              updatedAt: user.updatedAt,
-            },
-          },
-        },
+        // status,
+        // createdAt: new Date(),
+        // updatedAt: new Date(),
       },
     });
     return createdPost;
@@ -63,30 +52,15 @@ export class PostsRepository {
       where: { userId: +userId },
     });
 
-    if (!user) {
-      throw new Error("User를 찾을 수 없습니다.");
-    }
-
     const updatedPost = await prisma.contents.update({
       where: { UserId: +userId, contentsId: +contentsId },
       data: {
+        UserId: userId,
+        contentsId: +contentsId,
         title,
         myinfo,
-        status: contents.status,
         createdAt: contents.createdAt,
         updatedAt: new Date(),
-        User: {
-          connectOrCreate: {
-            where: { userId: user.userId },
-            create: {
-              email: user.email,
-              checkpassword: user.checkpassword,
-              password: user.password,
-              createdAt: user.createdAt,
-              updatedAt: user.updatedAt,
-            },
-          },
-        },
       },
     });
     return updatedPost;

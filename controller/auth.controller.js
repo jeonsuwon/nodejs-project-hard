@@ -72,11 +72,30 @@ export class AuthController {
   findUser = async (req, res, next) => {
     try {
       const { userId } = req.user;
-      console.log("con-userId:" + userId);
       const user = await this.authService.findUser(userId);
 
       return res.status(200).json({
         message: "정상적으로 확인되었습니다.",
+        data: user,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  updateUser = async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+      const { name, gender, age, address } = req.body;
+      const user = await this.authService.findUser(
+        userId,
+        name,
+        gender,
+        age,
+        address
+      );
+      return res.status(200).json({
+        message: "정상적으로 변경되었습니다.",
         data: user,
       });
     } catch (err) {

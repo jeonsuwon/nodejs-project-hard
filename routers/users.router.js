@@ -22,6 +22,8 @@ router.post("/sign-in", authController.signIn);
 //사용자 조회 API
 router.get("/user", authMiddleware, authController.findUser);
 
+router.put("/user", authMiddleware, authController.updateUser);
+
 //사용자 업데이트 api
 router.put("/user-info-update", authMiddleware, async (req, res, next) => {
   const { userId, username, userage, usergender, useraddress } = req.user;
