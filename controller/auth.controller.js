@@ -111,7 +111,7 @@ export class AuthController {
     const user = await this.authService.deleteUser(userId);
 
     return res.status(200).json({
-      message: "정상적으로 변경되었습니다.",
+      message: "정상적으로 삭제되었습니다.",
       data: user,
     });
   };
